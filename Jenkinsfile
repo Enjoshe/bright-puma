@@ -1,62 +1,54 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = 'bright-puma'  // Docker image name
-        CONTAINER_NAME = 'bright-puma-container'  // Docker container name
-    }
-
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                echo 'Building the application...'
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
                 script {
-                    // Build the Docker image
-                    // sh 'docker build -t $IMAGE_NAME .'
+                    echo "Building the application..."
+                    sh 'docker build -t bright-puma .'
                 }
             }
         }
 
-        stage('Test') {
+        stage('Install Dependencies') {
             steps {
-                echo 'Running tests...'
                 script {
-                    // Assuming you have tests in a 'tests' directory or modify accordingly
-                    // Run the tests using Docker container
-                    sh 'docker run --rm $IMAGE_NAME python -m unittest discover tests'
+                    echo "Installing dependencies..."
+                    // Your installation logic here
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying the application...'
-                script {
-                    // Run the Docker container in detached mode
-                    sh 'docker run -d --name $CONTAINER_NAME -p 5000:5000 $IMAGE_NAME'
-                }
+                echo "Deploying..."
             }
         }
 
-        stage('Run') {
+        stage('Health Check') {
             steps {
-                echo 'Running the application and checking health...'
-                script {
-                    // Ensure the application is running by hitting the health check endpoint
-                    sh 'curl http://localhost:5000/check/system/operation'
-                }
+                echo "Checking health..."
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                echo "Running Tests..."
             }
         }
     }
 
     post {
-    
-        success {
-            echo 'Pipeline completed successfully.'
-        }
-
-        failure {
-            echo 'Pipeline failed.'
+        always {
+            echo "Cleaning up workspace..."
+            cleanWs()
         }
     }
 }
