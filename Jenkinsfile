@@ -50,13 +50,7 @@ pipeline {
     }
 
     post {
-        always {
-            echo 'Cleaning up Docker containers...'
-            // Clean up any containers left running after the build
-            sh 'docker stop $CONTAINER_NAME || true'
-            sh 'docker rm $CONTAINER_NAME || true'
-        }
-
+    
         success {
             echo 'Pipeline completed successfully.'
         }
