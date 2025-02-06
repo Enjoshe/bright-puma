@@ -12,8 +12,9 @@ pipeline {
             steps {
                 sh '''
                     echo "Building.."
-                    sudo apt-get update
-                    sudo apt-get install python3.12-venv
+                    sudo -s 
+                    apt-get update
+                    apt-get install python3.12-venv
                     python3 -m venv venv  # Create a virtual environment
                     . venv/bin/activate && pip install --upgrade pip  # Activate the virtual environment and upgrade pip
                     . venv/bin/activate && pip install -r requirements.txt  # Install dependencies in the virtual environment
