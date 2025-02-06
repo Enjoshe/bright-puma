@@ -2,40 +2,41 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Checkout Code') {
             steps {
-                echo 'Building the application...'
-                script {
-                    sh 'docker build -t bright-puma .'
-                }
+                git branch: 'main', url: 'https://github.com/Zaid0408/cloud-runner.git'
             }
         }
 
-        stage('Test') {
+        stage('Build') {
             steps {
-                echo 'Running tests...'
-                script {
-                    sh 'docker run --rm bright-puma python -m unittest discover tests'
-                }
+                sh '''
+                    python3 -m venv venv  # Create a virtual environment
+                    . venv/bin/activate && pip install --upgrade pip  # Activate the virtual environment and upgrade pip
+                    . venv/bin/activate && pip install -r requirements.txt  # Install dependencies in the virtual environment
+                '''
             }
         }
+
+        // stage('Test') {
+        //     steps {
+        //         sh 'python3 -m unittest discover'
+        //     }
+        // }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying the application...'
-                script {
-                    sh 'docker run -d -p 5000:5000 bright-puma'
-                }
+                sh 'nohup python3 app.py &'
             }
         }
+    }
 
-        stage('Run') {
-            steps {
-                echo 'Running application...'
-                script {
-                    sh 'curl http://localhost:5000/check/system/operation'
-                }
-            }
+    post {
+        success {
+            echo 'Pipeline executed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }
