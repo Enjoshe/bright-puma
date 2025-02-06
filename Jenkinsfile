@@ -12,7 +12,7 @@ pipeline {
                 echo 'Building the application...'
                 script {
                     // Build the Docker image
-                    sh 'docker build -t $IMAGE_NAME .'
+                    // sh 'docker build -t $IMAGE_NAME .'
                 }
             }
         }
