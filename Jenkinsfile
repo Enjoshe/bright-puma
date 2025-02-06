@@ -11,9 +11,11 @@ pipeline {
         stage('Install python3-venv') {
             steps {
                 script {
-                    // Install python3-venv package for virtual environment creation
                     echo "Installing python3-venv..."
-                    sh 'sudo apt-get update && sudo apt-get install -y python3-venv'
+                    // Install Python and python3-venv directly in Windows
+                    sh 'choco install python --version=3.10 -y' // Installing Python using Chocolatey
+                    sh 'python -m ensurepip --upgrade'  // Upgrade pip
+                    sh 'python -m venv venv' // Create virtual environment
                 }
             }
         }
@@ -21,10 +23,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Create virtual environment
-                    echo "Creating virtual environment..."
-                    sh 'python3 -m venv venv'
-                    sh './venv/bin/pip install -r requirements.txt'
+                    echo "Installing dependencies..."
+                    sh './venv/Scripts/pip install -r requirements.txt'  // Install Python dependencies
                 }
             }
         }
